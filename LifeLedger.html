@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Life Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sage:#7C9E8F;--sage-light:#EAF2EE;--sage-mid:#B8D4C8;
+  --sand:#F5F0E8;--sand-dark:#E8E0D0;
+  --warm:#C4956A;--warm-light:#F5E8D8;
+  --text:#2C3830;--text-mid:#5A6B62;--text-soft:#8A9E94;
+  --white:#FDFCF9;--radius:16px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);min-height:100vh;}
+.app{max-width:480px;margin:0 auto;padding:1.5rem 1rem 5rem;}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:2rem;padding-top:.5rem;}
+.header-title{font-family:'DM Serif Display',serif;font-style:italic;font-size:30px;color:var(--text);}
+.header-month{font-size:13px;color:var(--text-soft);margin-top:4px;font-weight:300;letter-spacing:.5px;}
+.header-total{margin-top:12px;background:var(--white);border-radius:12px;padding:10px 24px;display:inline-block;border:1px solid var(--sand-dark);}
+.total-label{font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:1px;}
+.total-amt{font-size:24px;font-weight:500;color:var(--sage);}
+
+/* GRID & TILES */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.tile{background:var(--white);border-radius:var(--radius);padding:1rem 1.1rem;cursor:pointer;border:1px solid transparent;transition:all .2s;position:relative;overflow:hidden;}
+.tile:active{transform:scale(0.98);}
+.tile:hover{border-color:var(--sage-mid);transform:translateY(-1px);}
+.tile::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0;}
+.tile.sage::before{background:var(--sage);}
+.tile.warm::before{background:var(--warm);}
+.tile.soft::before{background:var(--sage-mid);}
+.tile-emoji{font-size:22px;margin-bottom:6px;display:block;}
+.tile-name{font-size:13px;font-weight:500;color:var(--text-mid);margin-bottom:4px;line-height:1.3;}
+.tile-amt{font-size:20px;font-weight:500;color:var(--text);}
+.tile-count{font-size:11px;color:var(--text-soft);margin-top:2px;}
+.tile-preset{font-size:10px;color:var(--sage);background:var(--sage-light);padding:2px 7px;border-radius:20px;display:inline-block;margin-top:5px;}
+
+/* SLIDE-UP PANEL */
+.panel{display:none;position:fixed;inset:0;background:rgba(44,56,48,.4);z-index:100;align-items:flex-end;justify-content:center;}
+.panel.open{display:flex;}
+.panel-inner{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:1.5rem 1.25rem 2.5rem;}
+.panel-handle{width:36px;height:4px;background:var(--sand-dark);border-radius:2px;margin:0 auto 1.3rem;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.panel-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);}
+.panel-total{font-size:18px;font-weight:500;color:var(--sage);}
+.panel-close{font-size:18px;color:var(--text-soft);cursor:pointer;background:var(--sand);border:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* SUBTABS */
+.subtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.1rem;}
+.subtab{font-size:12px;padding:5px 13px;border-radius:20px;border:1px solid var(--sand-dark);background:var(--white);color:var(--text-mid);cursor:pointer;transition:all .15s;}
+.subtab.active{background:var(--sage);border-color:var(--sage);color:white;}
+
+/* ENTRIES */
+.entries{margin-bottom:1rem;}
+.entry{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--sand-dark);}
+.entry-dot{width:8px;height:8px;border-radius:50%;background:var(--sage-mid);flex-shrink:0;margin-top:5px;}
+.entry-info{flex:1;min-width:0;}
+.entry-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.entry-date{font-size:13px;color:var(--text);font-weight:500;}
+.entry-sub{color:var(--sage);font-size:11px;margin-left:4px;}
+.entry-amt{font-size:14px;font-weight:500;color:var(--text);white-space:nowrap;}
+.entry-note-text{font-size:12px;color:var(--text-mid);margin-top:5px;font-style:italic;background:var(--sage-light);padding:4px 9px;border-radius:7px;display:inline-block;line-height:1.5;}
+.entry-del{font-size:18px;color:var(--text-soft);cursor:pointer;background:none;border:none;padding:0 4px;border-radius:6px;line-height:1;flex-shrink:0;}
+.entry-del:hover{background:#fde8e8;color:#b00;}
+.no-entries{text-align:center;padding:2rem 1rem;color:var(--text-soft);font-size:14px;line-height:1.6;}
+
+/* ADD FORM */
+.add-form{background:var(--sand);border-radius:14px;padding:1.1rem;margin-top:.5rem;}
+.add-form-title{font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.form-label{font-size:11px;color:var(--text-soft);margin-bottom:4px;display:block;letter-spacing:.3px;}
+.form-row{display:flex;gap:8px;margin-bottom:10px;}
+.form-col{display:flex;flex-direction:column;flex:1;}
+.form-input{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;}
+.form-input:focus{border-color:var(--sage);}
+.form-select{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;}
+.form-select:focus{border-color:var(--sage);}
+.form-note{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;resize:none;line-height:1.5;}
+.form-note:focus{border-color:var(--sage);}
+.form-note::placeholder{color:var(--text-soft);font-style:italic;}
+.btn-add{width:100%;background:var(--sage);color:white;border:none;border-radius:10px;padding:12px;font-size:15px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;margin-top:4px;letter-spacing:.2px;}
+.btn-add:hover{background:#6a8e7f;}
+.btn-add:active{transform:scale(0.99);}
+.btn-preset{width:100%;background:var(--sage-light);color:var(--sage);border:1px solid var(--sage-mid);border-radius:10px;padding:10px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;margin-bottom:10px;}
+.btn-preset:hover{background:var(--sage-mid);}
+
+/* NOTE hint */
+.note-hint{font-size:11px;color:var(--text-soft);font-style:italic;margin-bottom:5px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-title">Life Ledger</div>
+    <div class="header-month" id="cur-month"></div>
+    <div class="header-total">
+      <div class="total-label">total this month</div>
+      <div class="total-amt" id="grand-total">$0.00</div>
+    </div>
+  </div>
+  <div id="tiles-container"></div>
+</div>
+
+<!-- Slide-up panel -->
+<div class="panel" id="panel" onclick="handlePanelClick(event)">
+  <div class="panel-inner">
+    <div class="panel-handle"></div>
+    <div class="panel-header">
+      <div class="panel-title" id="panel-title"></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="panel-total" id="panel-total"></div>
+        <button class="panel-close" onclick="closePanel()">✕</button>
+      </div>
+    </div>
+
+    <div id="panel-subtabs" class="subtabs"></div>
+    <div class="entries" id="panel-entries"></div>
+
+    <div class="add-form">
+      <div class="add-form-title">add entry</div>
+      <div id="preset-btn-wrap"></div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label class="form-label">amount</label>
+          <input class="form-input" id="inp-amt" type="number" placeholder="$0.00" step="0.01" inputmode="decimal" />
+        </div>
+        <div class="form-col">
+          <label class="form-label">date</label>
+          <input class="form-input" id="inp-date" type="date" />
+        </div>
+      </div>
+
+      <div id="sub-select-row" style="display:none;margin-bottom:10px;">
+        <label class="form-label">subcategory</label>
+        <select class="form-select" id="inp-sub"></select>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <label class="form-label">note <span class="note-hint">(optional — only shows when filled in)</span></label>
+        <textarea class="form-note" id="inp-note" rows="2" placeholder="e.g. insurance didn't cover · tax deductible · long drive to Tampa..."></textarea>
+      </div>
+
+      <button class="btn-add" onclick="addEntry()">+ add entry</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS = [
+  {id:'bodycraft', name:'Bodycraft & Soul', emoji:'✨', color:'sage',  subs:[]},
+  {id:'expansion', name:'Expansion',        emoji:'🌱', color:'sage',  subs:[]},
+  {id:'ppc',       name:'PPC',              emoji:'💼', color:'warm',  subs:['Treats/Supplies','Marketing','Office/Admin','Client Meals','Client Gifts','Apparel']},
+  {id:'subscriptions', name:'Subscriptions',emoji:'🔄', color:'soft',  subs:['Gaia','Headway','Perplexity','AI Advantage','Pandora','iCloud','Amazon $7.53/mo','Grammarly $72/yr','LFA $15/mo']},
+  {id:'expenses',  name:'Expenses',         emoji:'🛍️', color:'warm',  subs:['Groceries','Events','Dining Out','Amazon','Travel','Airbnb/Hotel']},
+  {id:'sasha',     name:'Sasha',            emoji:'🚗', color:'sage',  subs:['Gas','Wash','Repairs']},
+  {id:'ssi',       name:'SSI',              emoji:'🏦', color:'soft',  subs:[]},
+  {id:'tiro',      name:'Tiro',             emoji:'📋', color:'soft',  subs:[]},
+  {id:'utilities', name:'Utilities',        emoji:'💡', color:'sage',  subs:[]},
+  {id:'cell',      name:'Cell',             emoji:'📱', color:'soft',  subs:[], preset:27.04},
+  {id:'rent',      name:'Rent',             emoji:'🏠', color:'warm',  subs:[]},
+  {id:'renters',   name:'Renters Insurance',emoji:'🛡️', color:'soft',  subs:[]},
+  {id:'statefarm', name:'State Farm',       emoji:'🔒', color:'soft',  subs:[]},
+  {id:'wifi',      name:'Wifi',             emoji:'📶', color:'sage',  subs:[]},
+  {id:'dental',    name:'Dental',           emoji:'🦷', color:'warm',  subs:[]},
+];
+
+let D = {}, aId = null, aSub = null;
+
+function load() {
+  try { D = JSON.parse(localStorage.getItem('lifeledger') || '{}'); } catch(e) { D = {}; }
+  CATS.forEach(c => { if (!D[c.id]) D[c.id] = []; });
+}
+
+function save() {
+  try { localStorage.setItem('lifeledger', JSON.stringify(D)); } catch(e) {}
+}
+
+function moEntries(id) {
+  const n = new Date(), mo = n.getMonth(), yr = n.getFullYear();
+  return (D[id] || []).filter(e => {
+    const d = new Date(e.date + 'T12:00:00');
+    return d.getMonth() === mo && d.getFullYear() === yr;
+  });
+}
+
+function catTot(id)  { return moEntries(id).reduce((s,e) => s + e.amt, 0); }
+function grandTot()  { return CATS.reduce((s,c) => s + catTot(c.id), 0); }
+function fmt(n)      { return '$' + n.toFixed(2); }
+
+function renderTiles() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cur-month').textContent = months[new Date().getMonth()] + ' ' + new Date().getFullYear();
+  document.getElementById('grand-total').textContent = fmt(grandTot());
+
+  let html = '';
+  for (let i = 0; i < CATS.length; i += 2) {
+    html += '<div class="grid">';
+    html += tHTML(CATS[i]);
+    if (i + 1 < CATS.length) html += tHTML(CATS[i + 1]);
+    html += '</div>';
+  }
+  document.getElementById('tiles-container').innerHTML = html;
+  document.querySelectorAll('.tile').forEach(t =>
+    t.addEventListener('click', () => openPanel(t.dataset.id))
+  );
+}
+
+function tHTML(c) {
+  const tot = catTot(c.id), en = moEntries(c.id);
+  return `<div class="tile ${c.color}" data-id="${c.id}">
+    <span class="tile-emoji">${c.emoji}</span>
+    <div class="tile-name">${c.name}</div>
+    <div class="tile-amt">${fmt(tot)}</div>
+    <div class="tile-count">${en.length} entr${en.length === 1 ? 'y' : 'ies'}</div>
+    ${c.preset ? `<div class="tile-preset">$${c.preset.toFixed(2)}/mo</div>` : ''}
+  </div>`;
+}
+
+function openPanel(id) {
+  aId = id; aSub = null;
+  const c = CATS.find(x => x.id === id);
+  document.getElementById('panel-title').textContent = c.emoji + ' ' + c.name;
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('inp-amt').value = '';
+  document.getElementById('inp-note').value = '';
+  document.getElementById('preset-btn-wrap').innerHTML = c.preset
+    ? `<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>` : '';
+  if (c.subs.length) {
+    document.getElementById('sub-select-row').style.display = 'block';
+    document.getElementById('inp-sub').innerHTML = c.subs.map(s => `<option value="${s}">${s}</option>`).join('');
+  } else {
+    document.getElementById('sub-select-row').style.display = 'none';
+  }
+  renderSubs(c);
+  renderEntries();
+}
+
+function renderSubs(c) {
+  const w = document.getElementById('panel-subtabs');
+  if (!c.subs.length) { w.innerHTML = ''; return; }
+  let h = `<span class="subtab ${aSub === null ? 'active' : ''}" onclick="setSub(null)">All</span>`;
+  c.subs.forEach(s => h += `<span class="subtab ${aSub === s ? 'active' : ''}" onclick="setSub('${s}')">${s}</span>`);
+  w.innerHTML = h;
+}
+
+function setSub(s) {
+  aSub = s;
+  renderSubs(CATS.find(c => c.id === aId));
+  renderEntries();
+}
+
+function renderEntries() {
+  const all = (D[aId] || []).slice().reverse();
+  const list = aSub ? all.filter(e => e.sub === aSub) : all;
+  document.getElementById('panel-total').textContent = fmt(list.reduce((s, e) => s + e.amt, 0));
+
+  if (!list.length) {
+    document.getElementById('panel-entries').innerHTML =
+      '<div class="no-entries">no entries yet<br>add one below 🌿</div>';
+    return;
+  }
+
+  let h = '';
+  list.forEach(e => {
+    const ri = (D[aId] || []).indexOf(e);
+    const d = new Date(e.date + 'T12:00:00');
+    const ds = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear().toString().slice(2);
+    const subSpan = e.sub ? `<span class="entry-sub">· ${e.sub}</span>` : '';
+    const noteHTML = e.note ? `<div class="entry-note-text">${e.note}</div>` : '';
+    h += `<div class="entry">
+      <div class="entry-dot"></div>
+      <div class="entry-info">
+        <div class="entry-top">
+          <div><span class="entry-date">${ds}</span>${subSpan}</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="entry-amt">${fmt(e.amt)}</span>
+            <button class="entry-del" onclick="delEntry(${ri})">×</button>
+          </div>
+        </div>
+        ${noteHTML}
+      </div>
+    </div>`;
+  });
+  document.getElementById('panel-entries').innerHTML = h;
+}
+
+function addEntry() {
+  const amt = parseFloat(document.getElementById('inp-amt').value);
+  if (!amt || amt <= 0) { document.getElementById('inp-amt').focus(); return; }
+  const note = document.getElementById('inp-note').value.trim();
+  const date = document.getElementById('inp-date').value || new Date().toISOString().split('T')[0];
+  const c = CATS.find(x => x.id === aId);
+  const sub = c.subs.length ? document.getElementById('inp-sub').value : null;
+  D[aId].push({ amt, note, date, sub });
+  save();
+  document.getElementById('inp-amt').value = '';
+  document.getElementById('inp-note').value = '';
+  renderEntries();
+  renderTiles();
+}
+
+function addPreset() {
+  const c = CATS.find(x => x.id === aId);
+  D[aId].push({ amt: c.preset, note: '', date: new Date().toISOString().split('T')[0], sub: null });
+  save();
+  renderEntries();
+  renderTiles();
+}
+
+function delEntry(i) {
+  D[aId].splice(i, 1);
+  save();
+  renderEntries();
+  renderTiles();
+}
+
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  aId = null;
+}
+
+function handlePanelClick(e) {
+  if (e.target === document.getElementById('panel')) closePanel();
+}
+
+load();
+renderTiles();
+</script>
+</body>
+</html>
