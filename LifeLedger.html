@@ -10,7 +10,7 @@
 :root{
   --sage:#7C9E8F;--sage-light:#EAF2EE;--sage-mid:#B8D4C8;
   --sand:#F5F0E8;--sand-dark:#E8E0D0;
-  --warm:#C4956A;--warm-light:#F5E8D8;
+  --warm:#C4956A;
   --text:#2C3830;--text-mid:#5A6B62;--text-soft:#8A9E94;
   --white:#FDFCF9;--radius:14px;
 }
@@ -169,39 +169,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUQJwK-7tREhjitsdZ_xou51YB0PMHf6EE2PvyvP8MVDk7YGzJihtwUiq12cQL0bw9/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyUQJwK-7tREhjitsdZ_xou51YB0PMHf6EE2PvyvP8MVDk7YGzJihtwUiq12cQL0bw9/exec';
 
-const DEFAULT_CATS = [
-  {id:'bodycraft',     name:'Bodycraft & Soul',  emoji:'✨', color:'sage', subs:[]},
-  {id:'expansion',     name:'Expansion',          emoji:'🌱', color:'sage', subs:[]},
-  {id:'ppc',           name:'PPC',                emoji:'💼', color:'warm', subs:['','Treats/Supplies','Marketing','Office/Admin','Client Meals','Client Gifts','Apparel']},
-  {id:'subscriptions', name:'Subscriptions',      emoji:'🔄', color:'soft', subs:['','Gaia','Headway','Perplexity','AI Advantage','Pandora','iCloud','Amazon','Grammarly','LFA']},
-  {id:'expenses',      name:'Expenses',            emoji:'🛍️', color:'warm', subs:['','Groceries','Events','Dining Out','Amazon','Travel','Airbnb/Hotel']},
-  {id:'sasha',         name:'Sasha',              emoji:'🚗', color:'sage', subs:['','Gas','Wash','Repairs']},
-  {id:'ssi',           name:'SSI',                emoji:'🏦', color:'soft', subs:[]},
-  {id:'tiro',          name:'Tiro',               emoji:'📋', color:'soft', subs:[]},
-  {id:'utilities',     name:'Utilities',          emoji:'💡', color:'sage', subs:[]},
-  {id:'cell',          name:'Cell',               emoji:'📱', color:'soft', subs:[], preset:27.03},
-  {id:'rent',          name:'Rent',               emoji:'🏠', color:'warm', subs:[]},
-  {id:'renters',       name:'Renters Insurance',  emoji:'🛡️', color:'soft', subs:[]},
-  {id:'statefarm',     name:'State Farm',         emoji:'🔒', color:'soft', subs:[]},
-  {id:'wifi',          name:'Wifi',               emoji:'📶', color:'sage', subs:[]},
-  {id:'dental',        name:'Dental',             emoji:'🦷', color:'warm', subs:[]},
+const DEFAULT_CATS=[
+  {id:'bodycraft',     name:'Bodycraft & Soul',  emoji:'✨',color:'sage',subs:[]},
+  {id:'expansion',     name:'Expansion',          emoji:'🌱',color:'sage',subs:[]},
+  {id:'ppc',           name:'PPC',                emoji:'💼',color:'warm',subs:['','Treats/Supplies','Marketing','Office/Admin','Client Meals','Client Gifts','Apparel']},
+  {id:'subscriptions', name:'Subscriptions',      emoji:'🔄',color:'soft',subs:['','Gaia','Headway','Perplexity','AI Advantage','Pandora','iCloud','Amazon','Grammarly','LFA']},
+  {id:'expenses',      name:'Expenses',            emoji:'🛍️',color:'warm',subs:['','Groceries','Events','Dining Out','Amazon','Travel','Airbnb/Hotel']},
+  {id:'sasha',         name:'Sasha',              emoji:'🚗',color:'sage',subs:['','Gas','Wash','Repairs']},
+  {id:'ssi',           name:'SSI',                emoji:'🏦',color:'soft',subs:[]},
+  {id:'tiro',          name:'Tiro',               emoji:'📋',color:'soft',subs:[]},
+  {id:'utilities',     name:'Utilities',          emoji:'💡',color:'sage',subs:[]},
+  {id:'cell',          name:'Cell',               emoji:'📱',color:'soft',subs:[],preset:27.03},
+  {id:'rent',          name:'Rent',               emoji:'🏠',color:'warm',subs:[]},
+  {id:'renters',       name:'Renters Insurance',  emoji:'🛡️',color:'soft',subs:[]},
+  {id:'statefarm',     name:'State Farm',         emoji:'🔒',color:'soft',subs:[]},
+  {id:'wifi',          name:'Wifi',               emoji:'📶',color:'sage',subs:[]},
+  {id:'dental',        name:'Dental',             emoji:'🦷',color:'warm',subs:[]},
 ];
 
-let CATS=[], entries=[], aId=null, aSub=null, editingIdx=null, managingSubs=false;
-let viewYear=new Date().getFullYear(), viewMonth=new Date().getMonth();
+let CATS=[],entries=[],aId=null,aSub=null,editingIdx=null,managingSubs=false;
+let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
+let selectedDate='';
+
+function todayStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
 
 function loadCats(){
-  try{ const s=localStorage.getItem('ll_cats'); CATS=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_CATS)); }
-  catch(e){ CATS=JSON.parse(JSON.stringify(DEFAULT_CATS)); }
+  try{const s=localStorage.getItem('ll_cats');CATS=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_CATS));}
+  catch(e){CATS=JSON.parse(JSON.stringify(DEFAULT_CATS));}
 }
-function saveCats(){ localStorage.setItem('ll_cats',JSON.stringify(CATS)); }
-function setSyncStatus(msg,type){ const el=document.getElementById('sync-status'); el.textContent=msg; el.className='sync-status '+(type||''); }
+function saveCats(){localStorage.setItem('ll_cats',JSON.stringify(CATS));}
+function setSyncStatus(msg,type){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(type||'');}
 
 async function loadEntries(){
   const cached=localStorage.getItem('ll_entries');
-  if(cached){ entries=JSON.parse(cached); }
+  if(cached){entries=JSON.parse(cached);}
   document.getElementById('loading').style.display='none';
   renderTiles();
   setSyncStatus('syncing...','syncing');
@@ -213,9 +219,9 @@ async function loadEntries(){
       localStorage.setItem('ll_entries',JSON.stringify(entries));
       setSyncStatus('synced with Google Drive ✓','synced');
       renderTiles();
-      if(aId){ renderSubTotals(CATS.find(c=>c.id===aId)); renderEntries(); }
+      if(aId){renderSubTotals(CATS.find(c=>c.id===aId));renderEntries();}
     }
-  } catch(e){ setSyncStatus('using cached data','error'); }
+  }catch(e){setSyncStatus('using cached data','error');}
 }
 
 async function syncAdd(entry){
@@ -223,35 +229,35 @@ async function syncAdd(entry){
     setSyncStatus('saving...','syncing');
     const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'addEntry',...entry})});
     const data=await res.json();
-    if(data.status==='success') setSyncStatus('synced with Google Drive ✓','synced');
+    if(data.status==='success')setSyncStatus('synced with Google Drive ✓','synced');
     else setSyncStatus('saved locally','error');
-  } catch(e){ setSyncStatus('saved locally','error'); }
+  }catch(e){setSyncStatus('saved locally','error');}
 }
 
 async function syncDelete(entry){
-  try{ await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'deleteEntry',...entry})}); } catch(e){}
+  try{await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'deleteEntry',...entry})});}catch(e){}
 }
 
 function getMonthEntries(id){
   return entries.filter(e=>{
-    if(e.category!==id) return false;
+    if(e.category!==id)return false;
     const d=new Date(e.date+'T12:00:00');
-    return d.getMonth()===viewMonth && d.getFullYear()===viewYear;
+    return d.getMonth()===viewMonth&&d.getFullYear()===viewYear;
   });
 }
 
-function catTot(id){ return getMonthEntries(id).reduce((s,e)=>s+e.amount,0); }
-function grandTot(){ return CATS.reduce((s,c)=>s+catTot(c.id),0); }
-function fmt(n){ return '$'+n.toFixed(2); }
+function catTot(id){return getMonthEntries(id).reduce((s,e)=>s+e.amount,0);}
+function grandTot(){return CATS.reduce((s,c)=>s+catTot(c.id),0);}
+function fmt(n){return '$'+n.toFixed(2);}
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function changeMonth(dir){
   viewMonth+=dir;
-  if(viewMonth>11){ viewMonth=0; viewYear++; }
-  if(viewMonth<0){ viewMonth=11; viewYear--; }
+  if(viewMonth>11){viewMonth=0;viewYear++;}
+  if(viewMonth<0){viewMonth=11;viewYear--;}
   renderTiles();
-  if(aId){ renderSubTotals(CATS.find(c=>c.id===aId)); renderEntries(); }
+  if(aId){renderSubTotals(CATS.find(c=>c.id===aId));renderEntries();}
 }
 
 function renderTiles(){
@@ -259,7 +265,7 @@ function renderTiles(){
   document.getElementById('grand-total').textContent=fmt(grandTot());
   let html='<div class="grid">';
   CATS.forEach((c,i)=>{
-    if(i>0&&i%3===0) html+='</div><div class="grid">';
+    if(i>0&&i%3===0)html+='</div><div class="grid">';
     html+=tHTML(c);
   });
   html+='</div>';
@@ -269,24 +275,28 @@ function renderTiles(){
 
 function tHTML(c){
   const tot=catTot(c.id);
-  return `<div class="tile ${c.color}" data-id="${c.id}">
+  return`<div class="tile ${c.color}" data-id="${c.id}">
     <span class="tile-emoji">${c.emoji}</span>
     <div class="tile-name">${c.name}</div>
     <div class="tile-amt">${fmt(tot)}</div>
   </div>`;
 }
 
+function setupDateInput(){
+  const inp=document.getElementById('inp-date');
+  selectedDate=todayStr();
+  inp.value=selectedDate;
+  inp.addEventListener('change',function(){if(this.value)selectedDate=this.value;});
+  inp.addEventListener('input',function(){if(this.value)selectedDate=this.value;});
+  inp.addEventListener('blur',function(){if(this.value)selectedDate=this.value;});
+}
+
 function openPanel(id){
-  aId=id; aSub=null; editingIdx=null; managingSubs=false;
+  aId=id;aSub=null;editingIdx=null;managingSubs=false;
   const c=CATS.find(x=>x.id===id);
   document.getElementById('panel-title').textContent=c.emoji+' '+c.name;
   document.getElementById('panel').classList.add('open');
-  // Always set today's date as default but allow changing
-  const today=new Date();
-  const yyyy=today.getFullYear();
-  const mm=String(today.getMonth()+1).padStart(2,'0');
-  const dd=String(today.getDate()).padStart(2,'0');
-  document.getElementById('inp-date').value=`${yyyy}-${mm}-${dd}`;
+  setupDateInput();
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
   document.getElementById('form-title').textContent='add entry';
@@ -297,20 +307,20 @@ function openPanel(id){
   if(c.subs.length){
     document.getElementById('sub-select-row').style.display='block';
     document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');
-  } else {
+  }else{
     document.getElementById('sub-select-row').style.display='none';
   }
-  renderSubTotals(c); renderSubtabs(c); renderManageSubs(false); renderEntries();
+  renderSubTotals(c);renderSubtabs(c);renderManageSubs(false);renderEntries();
 }
 
 function renderSubTotals(c){
   const wrap=document.getElementById('sub-totals-wrap');
   const named=c.subs.filter(s=>s!=='');
-  if(!named.length){ wrap.innerHTML=''; return; }
+  if(!named.length){wrap.innerHTML='';return;}
   const catEn=getMonthEntries(c.id);
   const rows=named.map(s=>({s,tot:catEn.filter(e=>e.subcategory===s).reduce((sum,e)=>sum+e.amount,0)})).filter(r=>r.tot>0);
   let h=`<div class="sub-totals"><div class="sub-totals-title">subcategory totals</div>`;
-  if(!rows.length) h+=`<div class="sub-total-none">no entries yet this month</div>`;
+  if(!rows.length)h+=`<div class="sub-total-none">no entries yet this month</div>`;
   else rows.forEach(r=>h+=`<div class="sub-total-row"><span class="sub-total-name">${r.s}</span><span class="sub-total-amt">${fmt(r.tot)}</span></div>`);
   h+=`</div>`;
   wrap.innerHTML=h;
@@ -319,7 +329,7 @@ function renderSubTotals(c){
 function renderSubtabs(c){
   const w=document.getElementById('panel-subtabs');
   const named=c.subs.filter(s=>s!=='');
-  if(!named.length){ w.innerHTML=''; return; }
+  if(!named.length){w.innerHTML='';return;}
   let h=`<span class="subtab ${aSub===null&&!managingSubs?'active':''}" onclick="setSub(null)">All</span>`;
   named.forEach(s=>h+=`<span class="subtab ${aSub===s?'active':''}" onclick="setSub('${s}')">${s}</span>`);
   h+=`<span class="subtab manage ${managingSubs?'active':''}" onclick="toggleManageSubs()">+ manage</span>`;
@@ -329,12 +339,12 @@ function renderSubtabs(c){
 function toggleManageSubs(){
   managingSubs=!managingSubs;
   const c=CATS.find(x=>x.id===aId);
-  renderSubtabs(c); renderManageSubs(managingSubs);
+  renderSubtabs(c);renderManageSubs(managingSubs);
 }
 
 function renderManageSubs(show){
   const wrap=document.getElementById('manage-subs-wrap');
-  if(!show){ wrap.innerHTML=''; return; }
+  if(!show){wrap.innerHTML='';return;}
   const c=CATS.find(x=>x.id===aId);
   const named=c.subs.filter(s=>s!=='');
   let h=`<div class="manage-subs"><div class="manage-subs-title">manage subcategories</div>`;
@@ -346,13 +356,13 @@ function renderManageSubs(show){
 function addSub(){
   const inp=document.getElementById('new-sub-inp');
   const name=inp.value.trim();
-  if(!name) return;
+  if(!name)return;
   const c=CATS.find(x=>x.id===aId);
-  if(!c.subs.includes('')) c.subs.unshift('');
-  c.subs.push(name); saveCats(); inp.value='';
+  if(!c.subs.includes(''))c.subs.unshift('');
+  c.subs.push(name);saveCats();inp.value='';
   document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');
   document.getElementById('sub-select-row').style.display='block';
-  renderSubtabs(c); renderManageSubs(true); renderSubTotals(c);
+  renderSubtabs(c);renderManageSubs(true);renderSubTotals(c);
 }
 
 function deleteSub(idx){
@@ -361,23 +371,23 @@ function deleteSub(idx){
   named.splice(idx,1);
   c.subs=named.length?['',...named]:[];
   saveCats();
-  if(c.subs.length) document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  if(c.subs.length)document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');
   else document.getElementById('sub-select-row').style.display='none';
-  renderSubtabs(c); renderManageSubs(true); renderSubTotals(c);
+  renderSubtabs(c);renderManageSubs(true);renderSubTotals(c);
 }
 
 function setSub(s){
-  aSub=s; managingSubs=false;
+  aSub=s;managingSubs=false;
   renderSubtabs(CATS.find(c=>c.id===aId));
-  renderManageSubs(false); renderEntries();
+  renderManageSubs(false);renderEntries();
 }
 
 function renderEntries(){
   let list=getMonthEntries(aId);
-  if(aSub) list=list.filter(e=>e.subcategory===aSub);
+  if(aSub)list=list.filter(e=>e.subcategory===aSub);
   list=list.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
   document.getElementById('panel-total').textContent=fmt(list.reduce((s,e)=>s+e.amount,0));
-  if(!list.length){ document.getElementById('panel-entries').innerHTML='<div class="no-entries">no entries yet<br>add one below 🌿</div>'; return; }
+  if(!list.length){document.getElementById('panel-entries').innerHTML='<div class="no-entries">no entries yet<br>add one below 🌿</div>';return;}
   let h='';
   list.forEach(e=>{
     const ri=entries.indexOf(e);
@@ -409,10 +419,11 @@ function editEntry(idx){
   editingIdx=idx;
   const e=entries[idx];
   document.getElementById('inp-amt').value=e.amount;
+  selectedDate=e.date;
   document.getElementById('inp-date').value=e.date;
   document.getElementById('inp-note').value=e.note||'';
   const c=CATS.find(x=>x.id===aId);
-  if(c.subs.length&&e.subcategory) document.getElementById('inp-sub').value=e.subcategory;
+  if(c.subs.length&&e.subcategory)document.getElementById('inp-sub').value=e.subcategory;
   document.getElementById('form-title').textContent='edit entry';
   document.getElementById('btn-submit').textContent='save changes';
   document.getElementById('btn-submit').className='btn-add editing';
@@ -425,26 +436,20 @@ function cancelEdit(){
   editingIdx=null;
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
-  const today=new Date();
-  const yyyy=today.getFullYear();
-  const mm=String(today.getMonth()+1).padStart(2,'0');
-  const dd=String(today.getDate()).padStart(2,'0');
-  document.getElementById('inp-date').value=`${yyyy}-${mm}-${dd}`;
+  setupDateInput();
   document.getElementById('form-title').textContent='add entry';
   document.getElementById('btn-submit').textContent='+ add entry';
   document.getElementById('btn-submit').className='btn-add';
   document.getElementById('btn-cancel').style.display='none';
   const c=CATS.find(x=>x.id===aId);
-  if(c.preset) document.getElementById('preset-btn-wrap').innerHTML=`<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>`;
+  if(c.preset)document.getElementById('preset-btn-wrap').innerHTML=`<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>`;
 }
 
 async function submitEntry(){
   const amt=parseFloat(document.getElementById('inp-amt').value);
-  if(!amt||amt<=0){ document.getElementById('inp-amt').focus(); return; }
+  if(!amt||amt<=0){document.getElementById('inp-amt').focus();return;}
   const note=document.getElementById('inp-note').value.trim();
-  // Get date exactly as typed in the date field
-  const dateVal=document.getElementById('inp-date').value;
-  const date=dateVal||new Date().toISOString().split('T')[0];
+  const date=selectedDate||document.getElementById('inp-date').value||todayStr();
   const c=CATS.find(x=>x.id===aId);
   const sub=c.subs.length?document.getElementById('inp-sub').value:'';
   if(editingIdx!==null){
@@ -458,30 +463,22 @@ async function submitEntry(){
   localStorage.setItem('ll_entries',JSON.stringify(entries));
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
-  const today=new Date();
-  const yyyy=today.getFullYear();
-  const mm=String(today.getMonth()+1).padStart(2,'0');
-  const dd=String(today.getDate()).padStart(2,'0');
-  document.getElementById('inp-date').value=`${yyyy}-${mm}-${dd}`;
+  setupDateInput();
   document.getElementById('form-title').textContent='add entry';
   document.getElementById('btn-submit').textContent='+ add entry';
   document.getElementById('btn-submit').className='btn-add';
   document.getElementById('btn-cancel').style.display='none';
-  if(c.preset) document.getElementById('preset-btn-wrap').innerHTML=`<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>`;
-  renderSubTotals(c); renderEntries(); renderTiles();
+  if(c.preset)document.getElementById('preset-btn-wrap').innerHTML=`<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>`;
+  renderSubTotals(c);renderEntries();renderTiles();
   syncAdd(entry);
 }
 
 async function addPreset(){
   const c=CATS.find(x=>x.id===aId);
-  const today=new Date();
-  const yyyy=today.getFullYear();
-  const mm=String(today.getMonth()+1).padStart(2,'0');
-  const dd=String(today.getDate()).padStart(2,'0');
-  const entry={date:`${yyyy}-${mm}-${dd}`,category:aId,subcategory:'',amount:c.preset,note:''};
+  const entry={date:todayStr(),category:aId,subcategory:'',amount:c.preset,note:''};
   entries.push(entry);
   localStorage.setItem('ll_entries',JSON.stringify(entries));
-  renderSubTotals(c); renderEntries(); renderTiles();
+  renderSubTotals(c);renderEntries();renderTiles();
   syncAdd(entry);
 }
 
@@ -490,12 +487,12 @@ async function delEntry(idx){
   entries.splice(idx,1);
   localStorage.setItem('ll_entries',JSON.stringify(entries));
   const c=CATS.find(x=>x.id===aId);
-  renderSubTotals(c); renderEntries(); renderTiles();
+  renderSubTotals(c);renderEntries();renderTiles();
   syncDelete(old);
 }
 
-function closePanel(){ document.getElementById('panel').classList.remove('open'); aId=null; editingIdx=null; }
-function handlePanelClick(e){ if(e.target===document.getElementById('panel')) closePanel(); }
+function closePanel(){document.getElementById('panel').classList.remove('open');aId=null;editingIdx=null;}
+function handlePanelClick(e){if(e.target===document.getElementById('panel'))closePanel();}
 
 loadCats();
 loadEntries();
