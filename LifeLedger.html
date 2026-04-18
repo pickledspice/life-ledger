@@ -83,6 +83,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
 .form-col{display:flex;flex-direction:column;flex:1;}
 .form-input{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;}
 .form-input:focus{border-color:var(--sage);}
+.form-input.error{border-color:#c0392b;}
 .form-select{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;}
 .form-select:focus{border-color:var(--sage);}
 .form-note{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;resize:none;line-height:1.5;}
@@ -94,6 +95,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
 .btn-cancel{width:100%;background:var(--sand);color:var(--text-mid);border:1px solid var(--sand-dark);border-radius:10px;padding:10px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:6px;}
 .btn-preset{width:100%;background:var(--sage-light);color:var(--sage);border:1px solid var(--sage-mid);border-radius:10px;padding:10px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;margin-bottom:10px;}
 .note-hint{font-size:11px;color:var(--text-soft);font-style:italic;}
+.date-hint{font-size:11px;color:var(--text-soft);margin-top:3px;}
 .manage-subs{background:var(--sand);border-radius:14px;padding:1rem;margin-bottom:1rem;}
 .manage-subs-title{font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
 .sub-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--sand-dark);}
@@ -106,8 +108,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
 .loading-text{font-size:14px;color:var(--text-mid);}
 .spinner{width:32px;height:32px;border:3px solid var(--sage-mid);border-top-color:var(--sage);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.date-display{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);cursor:pointer;text-align:left;}
-.date-display:focus{border-color:var(--sage);outline:none;}
 </style>
 </head>
 <body>
@@ -156,7 +156,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
         </div>
         <div class="form-col">
           <label class="form-label">date</label>
-          <input class="form-input" id="inp-date" type="date" onchange="captureDate(this.value)" oninput="captureDate(this.value)" />
+          <input class="form-input" id="inp-date" type="text" placeholder="4/18 or 1/15/26" inputmode="numeric" autocomplete="off" />
+          <div class="date-hint">leave blank for today</div>
         </div>
       </div>
       <div id="sub-select-row" style="display:none;margin-bottom:10px;">
@@ -167,8 +168,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
         <label class="form-label">note <span class="note-hint">(optional)</span></label>
         <textarea class="form-note" id="inp-note" rows="2" placeholder="e.g. tax deductible · long drive to Tampa..."></textarea>
       </div>
-      <button class="btn-add" id="btn-submit" ontouchstart="grabDate()" onclick="submitEntry()">+ add entry</button>
-      <button class="btn-cancel" id="btn-cancel" style="display:none;" ontouchstart="grabDate()" onclick="cancelEdit()">cancel</button>
+      <button class="btn-add" id="btn-submit" onclick="submitEntry()">+ add entry</button>
+      <button class="btn-cancel" id="btn-cancel" style="display:none;" onclick="cancelEdit()">cancel</button>
     </div>
   </div>
 </div>
@@ -192,43 +193,37 @@ const DEFAULT_CATS=[
   {id:'wifi',name:'Wifi',emoji:'📶',color:'sage',subs:[]},
   {id:'dental',name:'Dental',emoji:'🦷',color:'warm',subs:[]},
 ];
+
 let CATS=[],entries=[],aId=null,aSub=null,editingIdx=null,managingSubs=false;
 let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
-
-// Bulletproof date capture — stored in a module-level variable
-// Updated by EVERY possible event: change, input, touchstart on submit
-let _capturedDate = '';
 
 function todayStr(){
   const n=new Date();
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
 }
 
-function captureDate(val){
-  if(val && val.length===10) _capturedDate = val;
-}
-
-// Called on touchstart of submit button — grabs date at the FIRST touch
-// before Safari has any chance to blur/revert the date input
-function grabDate(){
-  const inp = document.getElementById('inp-date');
-  if(inp && inp.value && inp.value.length===10){
-    _capturedDate = inp.value;
+// Parse flexible date input into YYYY-MM-DD
+// Accepts: 4/18, 4/18/26, 4/18/2026, 01/15, blank (today)
+function parseDate(raw){
+  if(!raw||!raw.trim()) return todayStr();
+  const s = raw.trim().replace(/\s+/g,'');
+  // Already ISO format
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // M/D or M/D/YY or M/D/YYYY
+  const parts = s.split('/');
+  if(parts.length>=2){
+    const mo = parseInt(parts[0]);
+    const dy = parseInt(parts[1]);
+    let yr = new Date().getFullYear();
+    if(parts[2]){
+      yr = parseInt(parts[2]);
+      if(yr < 100) yr += 2000;
+    }
+    if(mo>=1&&mo<=12&&dy>=1&&dy<=31){
+      return yr+'-'+String(mo).padStart(2,'0')+'-'+String(dy).padStart(2,'0');
+    }
   }
-}
-
-function getDate(){
-  // Try every possible source in order of reliability
-  const inp = document.getElementById('inp-date');
-  if(inp && inp.value && inp.value.length===10) return inp.value;
-  if(_capturedDate && _capturedDate.length===10) return _capturedDate;
   return todayStr();
-}
-
-function setDateInput(val){
-  _capturedDate = val;
-  const inp = document.getElementById('inp-date');
-  if(inp) inp.value = val;
 }
 
 function loadCats(){
@@ -263,7 +258,6 @@ async function syncAdd(entry){
     const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'addEntry',...entry})});
     const data=await res.json();
     if(data.status==='success'){
-      // After successful save, reload from sheets so display matches
       setSyncStatus('synced with Google Drive ✓','synced');
       setTimeout(()=>refreshFromSheets(),1500);
     } else setSyncStatus('saved locally','error');
@@ -297,6 +291,7 @@ function getMonthEntries(id){
 function catTot(id){return getMonthEntries(id).reduce((s,e)=>s+e.amount,0);}
 function grandTot(){return CATS.reduce((s,c)=>s+catTot(c.id),0);}
 function fmt(n){return '$'+n.toFixed(2);}
+
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function changeMonth(dir){
@@ -330,7 +325,7 @@ function openPanel(id){
   const c=CATS.find(x=>x.id===id);
   document.getElementById('panel-title').textContent=c.emoji+' '+c.name;
   document.getElementById('panel').classList.add('open');
-  setDateInput(todayStr());
+  document.getElementById('inp-date').value='';
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
   document.getElementById('form-title').textContent='add entry';
@@ -438,7 +433,9 @@ function editEntry(idx){
   editingIdx=idx;
   const e=entries[idx];
   document.getElementById('inp-amt').value=e.amount;
-  setDateInput(e.date);
+  // Show date in friendly format for editing
+  const d=new Date(e.date+'T12:00:00');
+  document.getElementById('inp-date').value=(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear().toString().slice(2);
   document.getElementById('inp-note').value=e.note||'';
   const c=CATS.find(x=>x.id===aId);
   if(c.subs.length&&e.subcategory)document.getElementById('inp-sub').value=e.subcategory;
@@ -454,7 +451,7 @@ function cancelEdit(){
   editingIdx=null;
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
-  setDateInput(todayStr());
+  document.getElementById('inp-date').value='';
   document.getElementById('form-title').textContent='add entry';
   document.getElementById('btn-submit').textContent='+ add entry';
   document.getElementById('btn-submit').className='btn-add';
@@ -467,7 +464,7 @@ async function submitEntry(){
   const amt=parseFloat(document.getElementById('inp-amt').value);
   if(!amt||amt<=0){document.getElementById('inp-amt').focus();return;}
   const note=document.getElementById('inp-note').value.trim();
-  const date=getDate();
+  const date=parseDate(document.getElementById('inp-date').value);
   const c=CATS.find(x=>x.id===aId);
   const sub=c.subs.length?document.getElementById('inp-sub').value:'';
   if(editingIdx!==null){
@@ -481,7 +478,7 @@ async function submitEntry(){
   localStorage.setItem('ll_entries',JSON.stringify(entries));
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
-  setDateInput(todayStr());
+  document.getElementById('inp-date').value='';
   document.getElementById('form-title').textContent='add entry';
   document.getElementById('btn-submit').textContent='+ add entry';
   document.getElementById('btn-submit').className='btn-add';
