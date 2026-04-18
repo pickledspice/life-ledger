@@ -156,7 +156,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
         </div>
         <div class="form-col">
           <label class="form-label">date</label>
-          <input class="form-input" id="inp-date" type="text" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          <input class="form-input" id="inp-date" type="date" autocomplete="off" onchange="this.setAttribute('data-val',this.value)" oninput="this.setAttribute('data-val',this.value)" />
           
         </div>
       </div>
@@ -259,7 +259,8 @@ async function syncAdd(entry){
     const data=await res.json();
     if(data.status==='success'){
       setSyncStatus('synced with Google Drive ✓','synced');
-      setTimeout(()=>refreshFromSheets(),1500);
+      setTimeout(()=>refreshFromSheets(),800);
+      setTimeout(()=>refreshFromSheets(),3000);
     } else setSyncStatus('saved locally','error');
   }catch(e){setSyncStatus('saved locally','error');}
 }
@@ -325,7 +326,7 @@ function openPanel(id){
   const c=CATS.find(x=>x.id===id);
   document.getElementById('panel-title').textContent=c.emoji+' '+c.name;
   document.getElementById('panel').classList.add('open');
-  document.getElementById('inp-date').value='';
+  const _d=document.getElementById('inp-date'); _d.value=todayStr(); _d.setAttribute('data-val',todayStr());
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
   document.getElementById('form-title').textContent='add entry';
@@ -435,7 +436,7 @@ function editEntry(idx){
   document.getElementById('inp-amt').value=e.amount;
   // Show date in friendly format for editing
   const d=new Date(e.date+'T12:00:00');
-  document.getElementById('inp-date').value=(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear().toString().slice(2);
+  const _ed=document.getElementById('inp-date'); _ed.value=e.date; _ed.setAttribute('data-val',e.date);
   document.getElementById('inp-note').value=e.note||'';
   const c=CATS.find(x=>x.id===aId);
   if(c.subs.length&&e.subcategory)document.getElementById('inp-sub').value=e.subcategory;
@@ -451,7 +452,7 @@ function cancelEdit(){
   editingIdx=null;
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
-  document.getElementById('inp-date').value='';
+  const _d=document.getElementById('inp-date'); _d.value=todayStr(); _d.setAttribute('data-val',todayStr());
   document.getElementById('form-title').textContent='add entry';
   document.getElementById('btn-submit').textContent='+ add entry';
   document.getElementById('btn-submit').className='btn-add';
@@ -464,7 +465,11 @@ async function submitEntry(){
   const amt=parseFloat(document.getElementById('inp-amt').value);
   if(!amt||amt<=0){document.getElementById('inp-amt').focus();return;}
   const note=document.getElementById('inp-note').value.trim();
-  const date=parseDate(document.getElementById('inp-date').value);
+  const date = (()=>{
+    const inp = document.getElementById('inp-date');
+    const v = inp.getAttribute('data-val') || inp.value;
+    return (v && v.length===10) ? v : todayStr();
+  })();
   const c=CATS.find(x=>x.id===aId);
   const sub=c.subs.length?document.getElementById('inp-sub').value:'';
   if(editingIdx!==null){
@@ -478,7 +483,7 @@ async function submitEntry(){
   localStorage.setItem('ll_entries',JSON.stringify(entries));
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
-  document.getElementById('inp-date').value='';
+  const _d=document.getElementById('inp-date'); _d.value=todayStr(); _d.setAttribute('data-val',todayStr());
   document.getElementById('form-title').textContent='add entry';
   document.getElementById('btn-submit').textContent='+ add entry';
   document.getElementById('btn-submit').className='btn-add';
