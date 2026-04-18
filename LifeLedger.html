@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>Life Ledger</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Life Ledger" />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -15,9 +18,8 @@
   --white:#FDFCF9;--radius:14px;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);min-height:100vh;}
-.app{max-width:520px;margin:0 auto;padding:1rem 1rem 5rem;}
+.app{max-width:520px;margin:0 auto;padding:1.5rem 1rem 5rem;}
 .header{text-align:center;margin-bottom:1.8rem;padding-top:.5rem;}
-.header-illustration{width:140px;height:auto;margin:0 auto .5rem;}
 .header-title{font-family:'DM Serif Display',serif;font-style:italic;font-size:30px;color:var(--text);}
 .month-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:6px;}
 .month-btn{background:none;border:none;color:var(--text-soft);font-size:18px;cursor:pointer;padding:2px 8px;border-radius:8px;}
@@ -104,6 +106,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
 .loading-text{font-size:14px;color:var(--text-mid);}
 .spinner{width:32px;height:32px;border:3px solid var(--sage-mid);border-top-color:var(--sage);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
+.date-display{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);cursor:pointer;text-align:left;}
+.date-display:focus{border-color:var(--sage);outline:none;}
 </style>
 </head>
 <body>
@@ -113,63 +117,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
 </div>
 <div class="app">
   <div class="header">
-    <svg class="header-illustration" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg">
-      <style>
-        .r{fill:#FDFCF9;stroke:#D8D0C0;stroke-width:1;}
-        .rl{stroke:#D8D0C0;stroke-width:1.5;stroke-linecap:round;}
-        .rs{stroke:#E8E0D0;stroke-width:1;stroke-linecap:round;}
-        .sh{fill:#E0D8C8;}
-      </style>
-      <rect x="305" y="62" width="76" height="218" rx="3" class="sh" transform="rotate(-7 343 171)"/>
-      <rect x="315" y="58" width="76" height="218" rx="3" class="sh" transform="rotate(6 353 167)"/>
-      <rect x="303" y="60" width="76" height="218" rx="3" class="r" transform="rotate(-7 341 169)"/>
-      <line x1="316" y1="86" x2="366" y2="80" class="rl"/>
-      <line x1="316" y1="99" x2="358" y2="94" class="rs"/>
-      <line x1="316" y1="112" x2="364" y2="107" class="rl"/>
-      <line x1="316" y1="125" x2="354" y2="120" class="rs"/>
-      <line x1="316" y1="145" x2="366" y2="140" class="rl"/>
-      <line x1="316" y1="158" x2="360" y2="153" class="rs"/>
-      <line x1="316" y1="178" x2="364" y2="173" class="rl"/>
-      <line x1="316" y1="200" x2="368" y2="195" class="rl"/>
-      <line x1="316" y1="213" x2="356" y2="208" class="rs"/>
-      <line x1="316" y1="235" x2="368" y2="230" stroke="#7F77DD" stroke-width="2" stroke-linecap="round"/>
-      <rect x="313" y="56" width="76" height="218" rx="3" class="r" transform="rotate(6 351 165)"/>
-      <line x1="326" y1="80" x2="376" y2="86" class="rl"/>
-      <line x1="326" y1="93" x2="368" y2="98" class="rs"/>
-      <line x1="326" y1="106" x2="374" y2="112" class="rl"/>
-      <line x1="326" y1="119" x2="364" y2="124" class="rs"/>
-      <line x1="326" y1="139" x2="376" y2="145" class="rl"/>
-      <line x1="326" y1="152" x2="368" y2="157" class="rs"/>
-      <line x1="326" y1="172" x2="374" y2="178" class="rl"/>
-      <line x1="326" y1="194" x2="378" y2="200" class="rl"/>
-      <line x1="326" y1="207" x2="366" y2="212" class="rs"/>
-      <line x1="326" y1="229" x2="378" y2="235" stroke="#7F77DD" stroke-width="2" stroke-linecap="round"/>
-      <rect x="309" y="54" width="76" height="218" rx="3" class="r"/>
-      <line x1="323" y1="80" x2="373" y2="80" class="rl"/>
-      <line x1="323" y1="93" x2="361" y2="93" class="rs"/>
-      <line x1="323" y1="106" x2="371" y2="106" class="rl"/>
-      <line x1="323" y1="119" x2="357" y2="119" class="rs"/>
-      <line x1="323" y1="139" x2="373" y2="139" class="rl"/>
-      <line x1="323" y1="152" x2="363" y2="152" class="rs"/>
-      <line x1="323" y1="172" x2="371" y2="172" class="rl"/>
-      <line x1="323" y1="194" x2="373" y2="194" class="rl"/>
-      <line x1="323" y1="207" x2="359" y2="207" class="rs"/>
-      <line x1="323" y1="227" x2="373" y2="227" stroke="#7F77DD" stroke-width="2" stroke-linecap="round"/>
-      <path d="M 230 172 Q 270 162 309 172 Q 325 178 347 172 Q 369 166 391 172 Q 420 180 460 170" fill="none" stroke="#7F77DD" stroke-width="11" stroke-linecap="round"/>
-      <path d="M 230 172 Q 270 162 309 172 Q 325 178 347 172 Q 369 166 391 172 Q 420 180 460 170" fill="none" stroke="#AFA9EC" stroke-width="3" stroke-linecap="round"/>
-      <path d="M 347 172 C 320 165 295 148 288 128 C 282 110 294 98 308 104 C 322 110 328 132 347 148" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5" stroke-linejoin="round"/>
-      <path d="M 347 172 C 320 165 295 148 288 128 C 282 110 294 98 308 104 C 322 110 328 132 347 148" fill="none" stroke="#AFA9EC" stroke-width="2" stroke-linecap="round"/>
-      <path d="M 347 172 C 374 165 399 148 406 128 C 412 110 400 98 386 104 C 372 110 366 132 347 148" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5" stroke-linejoin="round"/>
-      <path d="M 347 172 C 374 165 399 148 406 128 C 412 110 400 98 386 104 C 372 110 366 132 347 148" fill="none" stroke="#AFA9EC" stroke-width="2" stroke-linecap="round"/>
-      <path d="M 347 172 C 330 164 310 152 298 136 C 286 120 290 106 302 108 C 314 110 326 128 347 148" fill="#9088CC" stroke="#534AB7" stroke-width="1"/>
-      <path d="M 347 172 C 364 164 384 152 396 136 C 408 120 404 106 392 108 C 380 110 368 128 347 148" fill="#9088CC" stroke="#534AB7" stroke-width="1"/>
-      <path d="M 347 172 C 340 185 330 205 326 225 C 322 242 330 252 340 244 C 350 236 350 212 347 192" fill="none" stroke="#7F77DD" stroke-width="10" stroke-linecap="round"/>
-      <path d="M 347 172 C 354 185 362 206 364 226 C 366 244 358 254 348 246 C 338 238 340 214 347 192" fill="none" stroke="#7F77DD" stroke-width="10" stroke-linecap="round"/>
-      <path d="M 347 172 C 340 185 330 205 326 225 C 322 242 330 252 340 244" fill="none" stroke="#AFA9EC" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M 347 172 C 354 185 362 206 364 226 C 366 244 358 254 348 246" fill="none" stroke="#AFA9EC" stroke-width="2.5" stroke-linecap="round"/>
-      <ellipse cx="347" cy="168" rx="12" ry="11" fill="#7F77DD" stroke="#534AB7" stroke-width="2"/>
-      <ellipse cx="347" cy="168" rx="5" ry="4" fill="#AFA9EC"/>
-    </svg>
     <div class="header-title">Life Ledger</div>
     <div class="month-nav">
       <button class="month-btn" onclick="changeMonth(-1)">‹</button>
@@ -209,7 +156,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
         </div>
         <div class="form-col">
           <label class="form-label">date</label>
-          <input class="form-input" id="inp-date" type="date" />
+          <input class="form-input" id="inp-date" type="date" onchange="captureDate(this.value)" oninput="captureDate(this.value)" />
         </div>
       </div>
       <div id="sub-select-row" style="display:none;margin-bottom:10px;">
@@ -220,8 +167,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);m
         <label class="form-label">note <span class="note-hint">(optional)</span></label>
         <textarea class="form-note" id="inp-note" rows="2" placeholder="e.g. tax deductible · long drive to Tampa..."></textarea>
       </div>
-      <button class="btn-add" id="btn-submit" onclick="submitEntry()">+ add entry</button>
-      <button class="btn-cancel" id="btn-cancel" style="display:none;" onclick="cancelEdit()">cancel</button>
+      <button class="btn-add" id="btn-submit" ontouchstart="grabDate()" onclick="submitEntry()">+ add entry</button>
+      <button class="btn-cancel" id="btn-cancel" style="display:none;" ontouchstart="grabDate()" onclick="cancelEdit()">cancel</button>
     </div>
   </div>
 </div>
@@ -247,11 +194,50 @@ const DEFAULT_CATS=[
 ];
 let CATS=[],entries=[],aId=null,aSub=null,editingIdx=null,managingSubs=false;
 let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
-let selectedDate='';
-function todayStr(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
-function loadCats(){try{const s=localStorage.getItem('ll_cats');CATS=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_CATS));}catch(e){CATS=JSON.parse(JSON.stringify(DEFAULT_CATS));}}
+
+// Bulletproof date capture — stored in a module-level variable
+// Updated by EVERY possible event: change, input, touchstart on submit
+let _capturedDate = '';
+
+function todayStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
+
+function captureDate(val){
+  if(val && val.length===10) _capturedDate = val;
+}
+
+// Called on touchstart of submit button — grabs date at the FIRST touch
+// before Safari has any chance to blur/revert the date input
+function grabDate(){
+  const inp = document.getElementById('inp-date');
+  if(inp && inp.value && inp.value.length===10){
+    _capturedDate = inp.value;
+  }
+}
+
+function getDate(){
+  // Try every possible source in order of reliability
+  const inp = document.getElementById('inp-date');
+  if(inp && inp.value && inp.value.length===10) return inp.value;
+  if(_capturedDate && _capturedDate.length===10) return _capturedDate;
+  return todayStr();
+}
+
+function setDateInput(val){
+  _capturedDate = val;
+  const inp = document.getElementById('inp-date');
+  if(inp) inp.value = val;
+}
+
+function loadCats(){
+  try{const s=localStorage.getItem('ll_cats');CATS=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_CATS));}
+  catch(e){CATS=JSON.parse(JSON.stringify(DEFAULT_CATS));}
+}
 function saveCats(){localStorage.setItem('ll_cats',JSON.stringify(CATS));}
 function setSyncStatus(msg,type){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(type||'');}
+
 async function loadEntries(){
   const cached=localStorage.getItem('ll_entries');
   if(cached){entries=JSON.parse(cached);}
@@ -270,16 +256,37 @@ async function loadEntries(){
     }
   }catch(e){setSyncStatus('using cached data','error');}
 }
+
 async function syncAdd(entry){
   try{
     setSyncStatus('saving...','syncing');
     const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'addEntry',...entry})});
     const data=await res.json();
-    if(data.status==='success')setSyncStatus('synced with Google Drive ✓','synced');
-    else setSyncStatus('saved locally','error');
+    if(data.status==='success'){
+      // After successful save, reload from sheets so display matches
+      setSyncStatus('synced with Google Drive ✓','synced');
+      setTimeout(()=>refreshFromSheets(),1500);
+    } else setSyncStatus('saved locally','error');
   }catch(e){setSyncStatus('saved locally','error');}
 }
-async function syncDelete(entry){try{await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'deleteEntry',...entry})});}catch(e){}}
+
+async function refreshFromSheets(){
+  try{
+    const res=await fetch(SCRIPT_URL+'?t='+Date.now());
+    const data=await res.json();
+    if(data.status==='success'){
+      entries=data.entries.map(e=>({...e,amount:parseFloat(e.amount)||0}));
+      localStorage.setItem('ll_entries',JSON.stringify(entries));
+      renderTiles();
+      if(aId){renderSubTotals(CATS.find(c=>c.id===aId));renderEntries();}
+    }
+  }catch(e){}
+}
+
+async function syncDelete(entry){
+  try{await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'deleteEntry',...entry})});}catch(e){}
+}
+
 function getMonthEntries(id){
   return entries.filter(e=>{
     if(e.category!==id)return false;
@@ -291,6 +298,7 @@ function catTot(id){return getMonthEntries(id).reduce((s,e)=>s+e.amount,0);}
 function grandTot(){return CATS.reduce((s,c)=>s+catTot(c.id),0);}
 function fmt(n){return '$'+n.toFixed(2);}
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
 function changeMonth(dir){
   viewMonth+=dir;
   if(viewMonth>11){viewMonth=0;viewYear++;}
@@ -298,6 +306,7 @@ function changeMonth(dir){
   renderTiles();
   if(aId){renderSubTotals(CATS.find(c=>c.id===aId));renderEntries();}
 }
+
 function renderTiles(){
   document.getElementById('cur-month').textContent=MONTHS[viewMonth]+' '+viewYear;
   document.getElementById('grand-total').textContent=fmt(grandTot());
@@ -310,20 +319,18 @@ function renderTiles(){
   document.getElementById('tiles-container').innerHTML=html;
   document.querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>openPanel(t.dataset.id)));
 }
-function tHTML(c){const tot=catTot(c.id);return`<div class="tile ${c.color}" data-id="${c.id}"><span class="tile-emoji">${c.emoji}</span><div class="tile-name">${c.name}</div><div class="tile-amt">${fmt(tot)}</div></div>`;}
-function setupDateInput(){
-  const inp=document.getElementById('inp-date');
-  selectedDate=todayStr();inp.value=selectedDate;
-  inp.addEventListener('change',function(){if(this.value)selectedDate=this.value;});
-  inp.addEventListener('input',function(){if(this.value)selectedDate=this.value;});
-  inp.addEventListener('blur',function(){if(this.value)selectedDate=this.value;});
+
+function tHTML(c){
+  const tot=catTot(c.id);
+  return`<div class="tile ${c.color}" data-id="${c.id}"><span class="tile-emoji">${c.emoji}</span><div class="tile-name">${c.name}</div><div class="tile-amt">${fmt(tot)}</div></div>`;
 }
+
 function openPanel(id){
   aId=id;aSub=null;editingIdx=null;managingSubs=false;
   const c=CATS.find(x=>x.id===id);
   document.getElementById('panel-title').textContent=c.emoji+' '+c.name;
   document.getElementById('panel').classList.add('open');
-  setupDateInput();
+  setDateInput(todayStr());
   document.getElementById('inp-amt').value='';
   document.getElementById('inp-note').value='';
   document.getElementById('form-title').textContent='add entry';
@@ -331,10 +338,15 @@ function openPanel(id){
   document.getElementById('btn-submit').className='btn-add';
   document.getElementById('btn-cancel').style.display='none';
   document.getElementById('preset-btn-wrap').innerHTML=c.preset?`<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>`:'';
-  if(c.subs.length){document.getElementById('sub-select-row').style.display='block';document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');}
-  else document.getElementById('sub-select-row').style.display='none';
+  if(c.subs.length){
+    document.getElementById('sub-select-row').style.display='block';
+    document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  }else{
+    document.getElementById('sub-select-row').style.display='none';
+  }
   renderSubTotals(c);renderSubtabs(c);renderManageSubs(false);renderEntries();
 }
+
 function renderSubTotals(c){
   const wrap=document.getElementById('sub-totals-wrap');
   const named=c.subs.filter(s=>s!=='');
@@ -346,6 +358,7 @@ function renderSubTotals(c){
   else rows.forEach(r=>h+=`<div class="sub-total-row"><span class="sub-total-name">${r.s}</span><span class="sub-total-amt">${fmt(r.tot)}</span></div>`);
   h+=`</div>`;wrap.innerHTML=h;
 }
+
 function renderSubtabs(c){
   const w=document.getElementById('panel-subtabs');
   const named=c.subs.filter(s=>s!=='');
@@ -355,7 +368,13 @@ function renderSubtabs(c){
   h+=`<span class="subtab manage ${managingSubs?'active':''}" onclick="toggleManageSubs()">+ manage</span>`;
   w.innerHTML=h;
 }
-function toggleManageSubs(){managingSubs=!managingSubs;const c=CATS.find(x=>x.id===aId);renderSubtabs(c);renderManageSubs(managingSubs);}
+
+function toggleManageSubs(){
+  managingSubs=!managingSubs;
+  const c=CATS.find(x=>x.id===aId);
+  renderSubtabs(c);renderManageSubs(managingSubs);
+}
+
 function renderManageSubs(show){
   const wrap=document.getElementById('manage-subs-wrap');
   if(!show){wrap.innerHTML='';return;}
@@ -366,28 +385,43 @@ function renderManageSubs(show){
   h+=`<div class="add-sub-row"><input class="form-input" id="new-sub-inp" placeholder="new subcategory name" /><button class="btn-add" style="width:auto;padding:10px 14px;font-size:13px;" onclick="addSub()">+ add</button></div></div>`;
   wrap.innerHTML=h;
 }
+
 function addSub(){
-  const inp=document.getElementById('new-sub-inp');const name=inp.value.trim();if(!name)return;
-  const c=CATS.find(x=>x.id===aId);if(!c.subs.includes(''))c.subs.unshift('');
+  const inp=document.getElementById('new-sub-inp');
+  const name=inp.value.trim();if(!name)return;
+  const c=CATS.find(x=>x.id===aId);
+  if(!c.subs.includes(''))c.subs.unshift('');
   c.subs.push(name);saveCats();inp.value='';
   document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');
   document.getElementById('sub-select-row').style.display='block';
   renderSubtabs(c);renderManageSubs(true);renderSubTotals(c);
 }
+
 function deleteSub(idx){
-  const c=CATS.find(x=>x.id===aId);const named=c.subs.filter(s=>s!=='');named.splice(idx,1);
+  const c=CATS.find(x=>x.id===aId);
+  const named=c.subs.filter(s=>s!=='');
+  named.splice(idx,1);
   c.subs=named.length?['',...named]:[];saveCats();
   if(c.subs.length)document.getElementById('inp-sub').innerHTML=c.subs.map(s=>`<option value="${s}">${s}</option>`).join('');
   else document.getElementById('sub-select-row').style.display='none';
   renderSubtabs(c);renderManageSubs(true);renderSubTotals(c);
 }
-function setSub(s){aSub=s;managingSubs=false;renderSubtabs(CATS.find(c=>c.id===aId));renderManageSubs(false);renderEntries();}
+
+function setSub(s){
+  aSub=s;managingSubs=false;
+  renderSubtabs(CATS.find(c=>c.id===aId));
+  renderManageSubs(false);renderEntries();
+}
+
 function renderEntries(){
   let list=getMonthEntries(aId);
   if(aSub)list=list.filter(e=>e.subcategory===aSub);
   list=list.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
   document.getElementById('panel-total').textContent=fmt(list.reduce((s,e)=>s+e.amount,0));
-  if(!list.length){document.getElementById('panel-entries').innerHTML='<div class="no-entries">no entries yet<br>add one below 🌿</div>';return;}
+  if(!list.length){
+    document.getElementById('panel-entries').innerHTML='<div class="no-entries">no entries yet<br>add one below 🌿</div>';
+    return;
+  }
   let h='';
   list.forEach(e=>{
     const ri=entries.indexOf(e);
@@ -399,10 +433,12 @@ function renderEntries(){
   });
   document.getElementById('panel-entries').innerHTML=h;
 }
+
 function editEntry(idx){
-  editingIdx=idx;const e=entries[idx];
+  editingIdx=idx;
+  const e=entries[idx];
   document.getElementById('inp-amt').value=e.amount;
-  selectedDate=e.date;document.getElementById('inp-date').value=e.date;
+  setDateInput(e.date);
   document.getElementById('inp-note').value=e.note||'';
   const c=CATS.find(x=>x.id===aId);
   if(c.subs.length&&e.subcategory)document.getElementById('inp-sub').value=e.subcategory;
@@ -413,44 +449,76 @@ function editEntry(idx){
   document.getElementById('preset-btn-wrap').innerHTML='';
   document.getElementById('add-form').scrollIntoView({behavior:'smooth'});
 }
+
 function cancelEdit(){
-  editingIdx=null;document.getElementById('inp-amt').value='';document.getElementById('inp-note').value='';
-  setupDateInput();
-  document.getElementById('form-title').textContent='add entry';document.getElementById('btn-submit').textContent='+ add entry';
-  document.getElementById('btn-submit').className='btn-add';document.getElementById('btn-cancel').style.display='none';
+  editingIdx=null;
+  document.getElementById('inp-amt').value='';
+  document.getElementById('inp-note').value='';
+  setDateInput(todayStr());
+  document.getElementById('form-title').textContent='add entry';
+  document.getElementById('btn-submit').textContent='+ add entry';
+  document.getElementById('btn-submit').className='btn-add';
+  document.getElementById('btn-cancel').style.display='none';
   const c=CATS.find(x=>x.id===aId);
   if(c.preset)document.getElementById('preset-btn-wrap').innerHTML=`<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>`;
 }
+
 async function submitEntry(){
   const amt=parseFloat(document.getElementById('inp-amt').value);
   if(!amt||amt<=0){document.getElementById('inp-amt').focus();return;}
   const note=document.getElementById('inp-note').value.trim();
-  const date=selectedDate||document.getElementById('inp-date').value||todayStr();
+  const date=getDate();
   const c=CATS.find(x=>x.id===aId);
   const sub=c.subs.length?document.getElementById('inp-sub').value:'';
-  if(editingIdx!==null){const old=entries[editingIdx];entries.splice(editingIdx,1);editingIdx=null;syncDelete(old);}
+  if(editingIdx!==null){
+    const old=entries[editingIdx];
+    entries.splice(editingIdx,1);
+    editingIdx=null;
+    syncDelete(old);
+  }
   const entry={date,category:aId,subcategory:sub,amount:amt,note};
-  entries.push(entry);localStorage.setItem('ll_entries',JSON.stringify(entries));
-  document.getElementById('inp-amt').value='';document.getElementById('inp-note').value='';
-  setupDateInput();
-  document.getElementById('form-title').textContent='add entry';document.getElementById('btn-submit').textContent='+ add entry';
-  document.getElementById('btn-submit').className='btn-add';document.getElementById('btn-cancel').style.display='none';
+  entries.push(entry);
+  localStorage.setItem('ll_entries',JSON.stringify(entries));
+  document.getElementById('inp-amt').value='';
+  document.getElementById('inp-note').value='';
+  setDateInput(todayStr());
+  document.getElementById('form-title').textContent='add entry';
+  document.getElementById('btn-submit').textContent='+ add entry';
+  document.getElementById('btn-submit').className='btn-add';
+  document.getElementById('btn-cancel').style.display='none';
   if(c.preset)document.getElementById('preset-btn-wrap').innerHTML=`<button class="btn-preset" onclick="addPreset()">+ add $${c.preset.toFixed(2)} (monthly)</button>`;
-  renderSubTotals(c);renderEntries();renderTiles();syncAdd(entry);
+  renderSubTotals(c);renderEntries();renderTiles();
+  syncAdd(entry);
 }
+
 async function addPreset(){
   const c=CATS.find(x=>x.id===aId);
   const entry={date:todayStr(),category:aId,subcategory:'',amount:c.preset,note:''};
-  entries.push(entry);localStorage.setItem('ll_entries',JSON.stringify(entries));
-  renderSubTotals(c);renderEntries();renderTiles();syncAdd(entry);
+  entries.push(entry);
+  localStorage.setItem('ll_entries',JSON.stringify(entries));
+  renderSubTotals(c);renderEntries();renderTiles();
+  syncAdd(entry);
 }
+
 async function delEntry(idx){
-  const old=entries[idx];entries.splice(idx,1);localStorage.setItem('ll_entries',JSON.stringify(entries));
-  const c=CATS.find(x=>x.id===aId);renderSubTotals(c);renderEntries();renderTiles();syncDelete(old);
+  const old=entries[idx];
+  entries.splice(idx,1);
+  localStorage.setItem('ll_entries',JSON.stringify(entries));
+  const c=CATS.find(x=>x.id===aId);
+  renderSubTotals(c);renderEntries();renderTiles();
+  syncDelete(old);
 }
-function closePanel(){document.getElementById('panel').classList.remove('open');aId=null;editingIdx=null;}
-function handlePanelClick(e){if(e.target===document.getElementById('panel'))closePanel();}
-loadCats();loadEntries();
+
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  aId=null;editingIdx=null;
+}
+function handlePanelClick(e){
+  if(e.target===document.getElementById('panel'))closePanel();
+}
+
+loadCats();
+loadEntries();
 </script>
 </body>
 </html>
